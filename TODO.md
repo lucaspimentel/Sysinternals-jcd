@@ -12,18 +12,18 @@ This approach allows us to develop and test the PowerShell module in a familiar 
 
 ## Phase A: PowerShell Support on Linux ✓ PRIORITY
 
-### Phase A1: PowerShell Module - Basic Functionality
+### Phase A1: PowerShell Module - Basic Functionality ✅ COMPLETED
 **Goal**: Create `jcd_function.ps1` that works on Linux with existing Rust binary
 
-- [ ] Create `src/jcd_function.ps1`:
-  - [ ] Implement basic `jcd` function that calls the Rust binary
-  - [ ] Add `-i` flag support for case-insensitive matching
-  - [ ] Add `-x` flag support for bypassing ignore patterns
-  - [ ] Add help message (`-h`, `--help`)
-  - [ ] Implement fast-path for simple navigation (`..`, `../..`, `.`, etc.)
-  - [ ] Locate binary via `$env:JCD_BINARY` or default locations (Linux paths: `/usr/bin/jcd`, Homebrew paths)
-  - [ ] Handle errors when no matches found
-  - [ ] Change directory with `Set-Location` based on binary output
+- [x] Create `src/jcd_function.ps1`:
+  - [x] Implement basic `jcd` function that calls the Rust binary
+  - [x] Add `-i` flag support for case-insensitive matching
+  - [x] Add `-x` flag support for bypassing ignore patterns
+  - [x] Add help message (`-h`, `--help`)
+  - [x] Implement fast-path for simple navigation (`..`, `../..`, `.`, etc.)
+  - [x] Locate binary via `$env:JCD_BINARY` or default locations (Linux paths: `/usr/bin/jcd`, Homebrew paths)
+  - [x] Handle errors when no matches found
+  - [x] Change directory with `Set-Location` based on binary output
 
 ### Phase A2: PowerShell Module - Basic Tab Completion
 **Goal**: Simple tab completion showing first match, then cycling forward
@@ -46,15 +46,24 @@ This approach allows us to develop and test the PowerShell module in a familiar 
   - [ ] Test with `../` patterns
   - [ ] Test cycling through multiple matches
 
-### Phase A3: Build System Updates
+### Phase A3: Build System Updates ✅ COMPLETED
 **Goal**: Automatically copy PowerShell module during build
 
-- [ ] Update `build.rs:1-20`:
-  - [ ] Copy `src/jcd_function.ps1` to `target/release/` and `target/debug/`
-  - [ ] Add `println!("cargo:rerun-if-changed=src/jcd_function.ps1");`
+- [x] Update `build.rs:1-31`:
+  - [x] Copy `src/jcd_function.ps1` to `target/release/` and `target/debug/`
+  - [x] Add `println!("cargo:rerun-if-changed=src/jcd_function.ps1");`
 
-### Phase A4: Testing on Linux
+### Phase A4: Testing on Linux 🔄 IN PROGRESS
 **Goal**: Verify PowerShell functionality on Linux
+
+**Status**: Created `tests/test_powershell_basic.ps1` - ready to test in WSL/Linux environment
+
+**Next Steps**:
+1. Switch to WSL or Linux environment
+2. Run: `cargo build --release`
+3. Run: `pwsh -NoProfile tests/test_powershell_basic.ps1`
+4. Fix any issues found
+5. Test tab completion manually (once Phase A2 is complete)
 
 - [ ] Manual testing on Linux with PowerShell:
   - [ ] Basic navigation works
@@ -63,9 +72,13 @@ This approach allows us to develop and test the PowerShell module in a familiar 
   - [ ] Case-insensitive search works
   - [ ] `-x` flag works
 
-- [ ] Create `tests/validate_jcd_powershell.ps1`:
-  - [ ] Port key tests from bash test suite
-  - [ ] Test Linux paths with PowerShell
+- [x] Create `tests/test_powershell_basic.ps1`:
+  - [x] Basic test framework
+  - [x] Test help flag
+  - [x] Test navigation (.., ../.. patterns)
+  - [x] Test case-insensitive flag
+  - [x] Test error handling
+  - [ ] Port additional tests from bash test suite
   - [ ] Test ignore file loading from `~/.config/jcd/ignore`
 
 ### Phase A5: Documentation for Linux
