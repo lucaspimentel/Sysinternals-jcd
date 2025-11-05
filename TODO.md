@@ -25,26 +25,25 @@ This approach allows us to develop and test the PowerShell module in a familiar 
   - [x] Handle errors when no matches found
   - [x] Change directory with `Set-Location` based on binary output
 
-### Phase A2: PowerShell Module - Basic Tab Completion
-**Goal**: Simple tab completion showing first match, then cycling forward
+### Phase A2: PowerShell Module - Basic Tab Completion ✅ COMPLETED
+**Goal**: Tab completion showing all matches (MenuComplete compatible)
 
-- [ ] Implement state management:
-  - [ ] Script-scoped variables for original pattern, matches, current index
-  - [ ] Reset logic when user types new pattern
+- [x] Implement `Get-JcdAllMatches` helper function:
+  - [x] Call binary with increasing index (0, 1, 2...) until no results
+  - [x] Handle case-insensitive flag (`-i`)
+  - [x] Safety limit of 100 matches
 
-- [ ] Implement `Register-ArgumentCompleter` for `jcd`:
-  - [ ] Detect case-insensitive flag (`-i`)
-  - [ ] Get all matches from binary (call with increasing index until no results)
-  - [ ] Return first match on initial Tab
-  - [ ] Cycle forward through matches on subsequent Tab presses
-  - [ ] Handle single match (auto-complete)
-  - [ ] Handle no matches (return empty)
+- [x] Implement `Register-ArgumentCompleter` with `-Native` for `jcd`:
+  - [x] Detect case-insensitive flag (`-i`) from command line
+  - [x] Get all matches from binary
+  - [x] Return all matches at once (MenuComplete compatible)
+  - [x] Show directory names in menu, insert full paths
+  - [x] Handle no matches (return empty array)
 
-- [ ] Test tab completion:
-  - [ ] Test with relative patterns
-  - [ ] Test with absolute paths
-  - [ ] Test with `../` patterns
-  - [ ] Test cycling through multiple matches
+- [x] Manual testing:
+  - [x] Test with relative patterns (`jcd src<TAB>`)
+  - [x] Test with case-insensitive flag (`jcd -i SRC<TAB>`)
+  - [x] Verified MenuComplete compatibility
 
 ### Phase A3: Build System Updates ✅ COMPLETED
 **Goal**: Automatically copy PowerShell module during build
