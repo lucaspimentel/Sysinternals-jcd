@@ -140,6 +140,10 @@ function jcd {
     # Build arguments for the JCD binary
     $jcdArgs = @()
 
+    # Always use --quiet in PowerShell to suppress the progress indicator
+    # (PowerShell doesn't handle stderr output well for inline animations)
+    $jcdArgs += "--quiet"
+
     if ($i) {
         $jcdArgs += "-i"
     }
@@ -154,7 +158,9 @@ function jcd {
 
     # Call the JCD binary to get the best match
     try {
-        $dest = & $jcdBinary @jcdArgs 2>&1
+        # Call binary with --quiet flag to suppress progress indicator
+        # Use Out-String to capture output reliably, then trim whitespace
+        $dest = (& $jcdBinary @jcdArgs | Out-String).Trim()
 
         # Check exit code
         if ($LASTEXITCODE -ne 0) {
