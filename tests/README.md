@@ -74,15 +74,30 @@ Usage:
 ./tests/simple_test.sh
 ```
 
+### `test_powershell_basic.ps1`
+**PowerShell basic functionality test**
+- Tests PowerShell module (`jcd_function.ps1`) on Linux
+- Verifies help, navigation, case-insensitive search, and error handling
+- Part of Phase A (PowerShell on Linux) development
+- Requires PowerShell 7+ installed
+
+Usage:
+```bash
+pwsh -NoProfile tests/test_powershell_basic.ps1
+```
+
 ## Running Tests
 
 ### All Tests
 ```bash
-# Run comprehensive test suite
+# Run comprehensive bash test suite
 ./tests/test_relative_comprehensive.sh
 
 # Quick validation
 ./tests/validate_jcd.sh
+
+# PowerShell test suite
+pwsh -NoProfile tests/test_powershell_basic.ps1
 ```
 
 ### CI/CD Integration
@@ -94,6 +109,7 @@ For automated testing, use the validate script:
 ## Test Requirements
 
 - Tests require the compiled binary at `target/release/jcd`
-- Tests create temporary directories under `/tmp/jcd_test/`
+- Bash tests create temporary directories under `/tmp/jcd_test/`
 - All tests clean up after themselves
 - Tests should be run from the project root directory
+- PowerShell tests require PowerShell 7+ (`pwsh` command available)

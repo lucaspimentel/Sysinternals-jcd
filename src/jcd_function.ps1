@@ -177,5 +177,5 @@ function jcd {
     }
 }
 
-# Export the function
-Export-ModuleMember -Function jcd
+# Note: When dot-sourced, the function is automatically available.
+# Export-ModuleMember is only needed for .psm1 module files.

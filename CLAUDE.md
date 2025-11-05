@@ -32,7 +32,7 @@ cargo build --release
 # Run all tests (recommended)
 ./tests/run_all_tests.sh
 
-# Individual test suites
+# Individual test suites (Bash)
 ./tests/validate_jcd.sh              # Basic validation
 ./tests/validate_shift_tab.sh        # Shift+Tab cycling validation
 ./tests/test_relative_comprehensive.sh   # Comprehensive relative path tests
@@ -40,9 +40,17 @@ cargo build --release
 ./tests/simple_test.sh               # Simple functionality test
 ./tests/quick_regression_test.sh     # Quick regression check
 
-# Manual testing after build
+# PowerShell test suite
+pwsh -NoProfile tests/test_powershell_basic.ps1  # Basic PowerShell functionality
+
+# Manual testing after build (Bash)
 export JCD_BINARY="$(pwd)/target/release/jcd"
 source src/jcd_function.sh
+jcd <pattern>  # Test navigation
+
+# Manual testing after build (PowerShell)
+$env:JCD_BINARY = "$(pwd)/target/release/jcd"
+. ./target/release/jcd_function.ps1
 jcd <pattern>  # Test navigation
 ```
 
@@ -149,9 +157,10 @@ PowerShell support is being added in two phases to reduce complexity. See `TODO.
 
 **Current Status (Phase A):**
 - ✅ Rust binary works correctly on Linux (no changes needed)
-- ❌ PowerShell module (`jcd_function.ps1`) not yet created
-- ❌ Tab completion not yet implemented for PowerShell
-- ❌ Build system does not yet copy `.ps1` file
+- ✅ PowerShell module (`jcd_function.ps1`) created with basic functionality
+- ✅ Build system copies `.ps1` file during build
+- ✅ Basic PowerShell tests pass (7/7 tests in `tests/test_powershell_basic.ps1`)
+- ❌ Tab completion not yet implemented for PowerShell (Phase A2 - next priority)
 
 **Current Status (Phase B - Future):**
 - ❌ Rust binary does not yet support Windows-specific ignore file paths
