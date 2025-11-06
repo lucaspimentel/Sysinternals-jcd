@@ -147,22 +147,43 @@ Users must source the shell function after installation:
 source /usr/bin/jcd_function.sh  # Or /opt/homebrew/bin/jcd_function.sh on Mac
 ```
 
-## PowerShell Support (In Progress)
+## PowerShell Support
 
-PowerShell support is being added in two phases to reduce complexity. See `TODO.md` for the complete implementation plan.
+PowerShell support is being added in two phases. See `TODO.md` for the complete implementation plan.
 
 **Development Approach:**
-- **Phase A: PowerShell on Linux** (Current) - Build and test PowerShell module using existing Rust binary on Linux
-- **Phase B: PowerShell on Windows** (Next) - Add Windows-specific path support to Rust binary, then test on Windows
+- **Phase A: PowerShell on Linux** ✅ COMPLETE - Build and test PowerShell module using existing Rust binary on Linux
+- **Phase B: PowerShell on Windows** (Future) - Add Windows-specific path support to Rust binary, then test on Windows
 
-**Current Status (Phase A):**
+**Phase A Status (PowerShell on Linux) - ✅ COMPLETE:**
 - ✅ Rust binary works correctly on Linux (no changes needed)
-- ✅ PowerShell module (`jcd_function.ps1`) created with basic functionality
-- ✅ Build system copies `.ps1` file during build
-- ✅ Basic PowerShell tests pass (7/7 tests in `tests/test_powershell_basic.ps1`)
-- ❌ Tab completion not yet implemented for PowerShell (Phase A2 - next priority)
+- ✅ PowerShell module (`jcd_function.ps1`) with full functionality
+- ✅ Build system automatically copies `.ps1` file during build
+- ✅ All basic tests pass (7/7 tests in `tests/test_powershell_basic.ps1`)
+- ✅ Tab completion implemented with `Register-ArgumentCompleter -Native`
+- ✅ MenuComplete compatible (shows all matches, PSReadLine handles Tab/Shift+Tab)
+- ✅ Case-insensitive search with `-i` flag
+- ✅ Ignore patterns work (inherited from Rust binary)
 
-**Current Status (Phase B - Future):**
+**Installation (Build from Source - Linux/WSL):**
+```bash
+# Build
+cargo build --release
+
+# Add to PowerShell profile ($PROFILE)
+$env:JCD_BINARY = "/path/to/Sysinternals-jcd/target/release/jcd"
+. /path/to/Sysinternals-jcd/target/release/jcd_function.ps1
+```
+
+**Usage:**
+```powershell
+jcd src              # Navigate to directory matching 'src'
+jcd -i DOC           # Case-insensitive search
+jcd dd<TAB>          # Tab completion shows all matches
+jcd ..               # Navigate to parent
+```
+
+**Phase B Status (PowerShell on Windows) - Future:**
 - ❌ Rust binary does not yet support Windows-specific ignore file paths
 - ❌ PowerShell module not yet tested on Windows
 - ❌ Windows path separators (`\`) not yet validated
@@ -170,10 +191,11 @@ PowerShell support is being added in two phases to reduce complexity. See `TODO.
 **Key Design Decisions:**
 - Develop PowerShell module on Linux first to simplify testing and iteration
 - Use existing Rust binary on Linux (already works with standard Unix paths)
-- Use `%USERPROFILE%\.config\jcd\ignore` on Windows (keeping `~/.config` pattern for consistency)
-- Accept both `/` and `\` as path separators on Windows
+- Tab completion handled by PSReadLine (Tab/Shift+Tab cycling automatic)
+- Use `--quiet` flag to suppress progress animation in PowerShell
+- Future: `%USERPROFILE%\.config\jcd\ignore` on Windows (keeping `~/.config` pattern)
+- Future: Accept both `/` and `\` as path separators on Windows
 - Build-from-source installation for now; packaged installation (Scoop, etc.) will come later
-- Advanced features (animated indicators, Shift+Tab) deferred to future enhancements
 
 ## Important Notes
 

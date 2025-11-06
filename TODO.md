@@ -74,17 +74,19 @@ This approach allows us to develop and test the PowerShell module in a familiar 
   - [ ] Port additional tests from bash test suite (future enhancement)
   - [ ] Test ignore file loading from `~/.config/jcd/ignore` (future enhancement)
 
-### Phase A5: Documentation for Linux
+### Phase A5: Documentation for Linux ✅ COMPLETED
 **Goal**: Document PowerShell usage on Linux
 
 - [ ] Update `README.md`:
-  - [ ] Add PowerShell installation instructions for Linux
-  - [ ] Add PowerShell usage examples
-  - [ ] Note that Windows support is coming in Phase B
+  - [ ] Deferred - waiting for packaged installation method
+  - [ ] Will add PowerShell section when package managers support it
 
-- [ ] Update `CLAUDE.md`:
-  - [ ] Update PowerShell support status
-  - [ ] Note Phase A completion
+- [x] Update `CLAUDE.md`:
+  - [x] Update PowerShell support status to COMPLETE
+  - [x] Add installation instructions (build from source)
+  - [x] Add usage examples
+  - [x] Document tab completion (MenuComplete compatible)
+  - [x] Note Phase A completion
 
 ---
 
@@ -153,17 +155,21 @@ This approach allows us to develop and test the PowerShell module in a familiar 
 
 ## Future Enhancements (Lower Priority)
 
-### Advanced Tab Completion Features
-- [ ] **Shift+Tab backward cycling** in PowerShell:
-  - [ ] Use `Set-PSReadLineKeyHandler -Chord Shift+Tab`
-  - [ ] Implement backward cycling direction state
-  - [ ] Port logic from `jcd_function.sh:614-618,927-969`
+### Tab Completion Notes
+**Note**: Tab/Shift+Tab cycling and menu display are handled by PSReadLine automatically.
+Our `Register-ArgumentCompleter` returns all matches, and PSReadLine handles:
+- Tab: Forward cycling
+- Shift+Tab: Backward cycling
+- MenuComplete, InlineView, ListView modes
+- All keyboard navigation
 
-- [ ] **Animated loading indicators** in PowerShell:
+No additional implementation needed - it already works!
+
+### Advanced Features
+- [ ] **Animated loading indicators** in PowerShell (optional):
   - [ ] Use `Write-Host -NoNewline` with ANSI escape codes
   - [ ] Implement background job for animation
-  - [ ] Port logic from `jcd_function.sh:308-361`
-  - [ ] Ensure compatibility with PSReadLine
+  - [ ] Note: Currently using `--quiet` flag, so no animation needed
 
 ### Installation & Packaging
 - [ ] **Scoop package**:
