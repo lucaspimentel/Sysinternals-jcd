@@ -92,32 +92,36 @@ This approach allows us to develop and test the PowerShell module in a familiar 
 
 ## Phase B: PowerShell Support on Windows
 
-### Phase B1: Rust Binary - Windows Path Support
+### Phase B1: Rust Binary - Windows Path Support ✅ COMPLETED
 **Goal**: Make the Rust binary work correctly on Windows
 
-- [ ] Update `get_ignore_file_paths()` in `src/main.rs:18-46` to support Windows paths:
-  - [ ] Add `#[cfg(windows)]` conditional compilation
-  - [ ] Use `%USERPROFILE%\.config\jcd\ignore` (equivalent to `~/.config/jcd/ignore`)
-  - [ ] Use `%USERPROFILE%\.jcdignore` (legacy, equivalent to `~/.jcdignore`)
-  - [ ] Use `C:\ProgramData\jcd\ignore` (system-wide)
-  - [ ] Keep project-local `.jcdignore` (works as-is)
+- [x] Update `get_ignore_file_paths()` in `src/main.rs:18-83`:
+  - [x] Add `#[cfg(windows)]` and `#[cfg(not(windows))]` conditional compilation
+  - [x] Use `%USERPROFILE%\.config\jcd\ignore` on Windows
+  - [x] Use `%USERPROFILE%\.jcdignore` (legacy) on Windows
+  - [x] Use `%PROGRAMDATA%\jcd\ignore` (system-wide, not hardcoded C:\ProgramData)
+  - [x] Keep project-local `.jcdignore` (works as-is on all platforms)
+  - [x] Unix paths unchanged (HOME, XDG_CONFIG_HOME, /etc/jcd/ignore)
 
-- [ ] Test path separator handling:
+- [ ] Test path separator handling (requires Windows):
   - [ ] Verify `PathBuf` handles both `/` and `\` correctly on Windows
   - [ ] Test patterns like `jcd foo/bar` work with forward slashes on Windows
   - [ ] Test absolute Windows paths like `C:\Users\...`
   - [ ] Test UNC paths like `\\server\share` (if applicable)
 
-- [ ] Add Windows-specific dependencies to `Cargo.toml` if needed:
-  - [ ] Consider `dirs` crate for cross-platform path handling (`%USERPROFILE%` vs `$HOME`)
+- [x] Windows-specific dependencies:
+  - [x] No additional dependencies needed - using stdlib env vars
 
-### Phase B2: PowerShell Module - Windows Path Support
+### Phase B2: PowerShell Module - Windows Path Support ✅ COMPLETED
 **Goal**: Update `jcd_function.ps1` to handle Windows paths
 
-- [ ] Update `src/jcd_function.ps1`:
-  - [ ] Add Windows default binary locations to search path
-  - [ ] Test with Windows path separators (`\`)
-  - [ ] Ensure fast-path logic works with Windows paths
+- [x] Update `src/jcd_function.ps1`:
+  - [x] Add Windows default binary locations to search path
+    - [x] %ProgramFiles%\jcd\jcd.exe
+    - [x] %ProgramFiles(x86)%\jcd\jcd.exe
+    - [x] %LOCALAPPDATA%\Programs\jcd\jcd.exe
+  - [x] Update both main function and tab completion binary location
+  - [x] Fast-path logic already works (PowerShell handles path separators)
 
 ### Phase B3: Testing on Windows
 **Goal**: Verify PowerShell functionality on Windows

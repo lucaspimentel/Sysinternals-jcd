@@ -52,16 +52,22 @@ function jcd {
         $jcdBinary = $env:JCD_BINARY
     }
     else {
-        # Try default locations
+        # Try default locations (cross-platform)
         $defaultLocations = @(
+            # Unix/Linux locations
             "/usr/bin/jcd",                           # Linux standard location
             "/usr/local/bin/jcd",                     # Linux local installation
             "/opt/homebrew/bin/jcd",                  # macOS Homebrew (Apple Silicon)
-            "/usr/local/opt/jcd/bin/jcd"              # macOS Homebrew (Intel)
+            "/usr/local/opt/jcd/bin/jcd",             # macOS Homebrew (Intel)
+
+            # Windows locations
+            "$env:ProgramFiles\jcd\jcd.exe",          # Windows Program Files
+            "${env:ProgramFiles(x86)}\jcd\jcd.exe",   # Windows Program Files (x86)
+            "$env:LOCALAPPDATA\Programs\jcd\jcd.exe"  # Windows user-local installation
         )
 
         foreach ($location in $defaultLocations) {
-            if (Test-Path $location) {
+            if ($location -and (Test-Path $location)) {
                 $jcdBinary = $location
                 break
             }
@@ -237,16 +243,22 @@ Register-ArgumentCompleter -Native -CommandName jcd -ScriptBlock {
         $jcdBinary = $env:JCD_BINARY
     }
     else {
-        # Try default locations
+        # Try default locations (cross-platform)
         $defaultLocations = @(
+            # Unix/Linux locations
             "/usr/bin/jcd",
             "/usr/local/bin/jcd",
             "/opt/homebrew/bin/jcd",
-            "/usr/local/opt/jcd/bin/jcd"
+            "/usr/local/opt/jcd/bin/jcd",
+
+            # Windows locations
+            "$env:ProgramFiles\jcd\jcd.exe",
+            "${env:ProgramFiles(x86)}\jcd\jcd.exe",
+            "$env:LOCALAPPDATA\Programs\jcd\jcd.exe"
         )
 
         foreach ($location in $defaultLocations) {
-            if (Test-Path $location) {
+            if ($location -and (Test-Path $location)) {
                 $jcdBinary = $location
                 break
             }

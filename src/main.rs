@@ -24,7 +24,19 @@ fn get_ignore_file_paths() -> Vec<PathBuf> {
         paths.push(current_dir.join(".jcdignore"));
     }
 
-    // 2. User XDG config directory
+    // 2. User config directory
+    // On Windows: %USERPROFILE%\.config\jcd\ignore
+    // On Unix: $XDG_CONFIG_HOME/jcd/ignore or $HOME/.config/jcd/ignore
+    #[cfg(windows)]
+    let config_home = env::var("XDG_CONFIG_HOME")
+        .map(PathBuf::from)
+        .unwrap_or_else(|_| {
+            env::var("USERPROFILE")
+                .map(|home| PathBuf::from(home).join(".config"))
+                .unwrap_or_else(|_| PathBuf::from(".config"))
+        });
+
+    #[cfg(not(windows))]
     let config_home = env::var("XDG_CONFIG_HOME")
         .map(PathBuf::from)
         .unwrap_or_else(|_| {
@@ -32,15 +44,40 @@ fn get_ignore_file_paths() -> Vec<PathBuf> {
                 .map(|home| PathBuf::from(home).join(".config"))
                 .unwrap_or_else(|_| PathBuf::from(".config"))
         });
+
     paths.push(config_home.join("jcd").join("ignore"));
 
     // 3. Legacy dotfile for backward compatibility
-    if let Ok(home) = env::var("HOME") {
-        paths.push(PathBuf::from(home).join(".jcdignore"));
+    // On Windows: %USERPROFILE%\.jcdignore
+    // On Unix: $HOME/.jcdignore
+    #[cfg(windows)]
+    {
+        if let Ok(home) = env::var("USERPROFILE") {
+            paths.push(PathBuf::from(home).join(".jcdignore"));
+        }
+    }
+
+    #[cfg(not(windows))]
+    {
+        if let Ok(home) = env::var("HOME") {
+            paths.push(PathBuf::from(home).join(".jcdignore"));
+        }
     }
 
     // 4. System-wide configuration
-    paths.push(PathBuf::from("/etc/jcd/ignore"));
+    // On Windows: %PROGRAMDATA%\jcd\ignore (typically C:\ProgramData\jcd\ignore)
+    // On Unix: /etc/jcd/ignore
+    #[cfg(windows)]
+    {
+        if let Ok(programdata) = env::var("PROGRAMDATA") {
+            paths.push(PathBuf::from(programdata).join("jcd").join("ignore"));
+        }
+    }
+
+    #[cfg(not(windows))]
+    {
+        paths.push(PathBuf::from("/etc/jcd/ignore"));
+    }
 
     paths
 }
