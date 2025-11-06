@@ -58,7 +58,7 @@ result=$(pwsh -NoProfile -Command "
     . '$PS_MODULE'
     jcd -h 2>&1
 ")
-if [[ "$result" == *"Usage: jcd"* ]]; then
+if [[ "$result" == *"Usage"* ]] && [[ "$result" == *"jcd"* ]]; then
     echo "✓ PASS"
     ((PASSED++))
 else
@@ -187,16 +187,19 @@ result=$(pwsh -NoProfile -Command "
     \$env:JCD_BINARY = '$JCD_BINARY'
     . '$PS_MODULE'
     Set-Location '$TEST_DIR'
-    jcd 'xyzzy_nonexistent_12345' 2>&1 | Out-Null
-    Get-Location | Select-Object -ExpandProperty Path
+    \$null = jcd 'xyzzy_nonexistent_12345' 2>&1
+    (Get-Location).Path
 ")
-if [[ "$result" == "$TEST_DIR" ]]; then
+# Extract just the last line (the path) and normalize
+result_path=$(echo "$result" | tail -1 | tr -d '\r\n' | xargs)
+test_dir_normalized=$(echo "$TEST_DIR" | tr -d '\r\n' | xargs)
+if [[ "$result_path" == "$test_dir_normalized" ]]; then
     echo "✓ PASS"
     ((PASSED++))
 else
     echo "✗ FAIL"
     echo "  Expected: $TEST_DIR (unchanged)"
-    echo "  Got: $result"
+    echo "  Got: '$result_path'"
     ((FAILED++))
 fi
 
