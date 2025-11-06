@@ -77,6 +77,18 @@ run_test "Comprehensive Relative Path Test" "./test_relative_comprehensive.sh"
 run_test "Ignore Functionality Test" "./test_ignore_functionality.sh"
 run_test "Validation Test" "./validate_jcd.sh"
 
+# PowerShell tests (cross-platform)
+if command -v pwsh &> /dev/null; then
+    if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
+        run_test "PowerShell Validation (Windows)" "./validate_powershell_windows.sh"
+    else
+        run_test "PowerShell Validation (Linux)" "./validate_powershell_linux.sh"
+    fi
+else
+    echo -e "${YELLOW}⚠ SKIPPED: PowerShell tests (pwsh not found)${NC}"
+    echo
+fi
+
 # Regression and bug fix tests
 run_test "Quick Regression Test" "./quick_regression_test.sh"
 run_test "Absolute Bug Test" "./test_absolute_bug.sh"

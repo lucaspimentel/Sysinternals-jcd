@@ -29,7 +29,7 @@ cargo build --release
 
 ### Testing
 ```bash
-# Run all tests (recommended)
+# Run all tests (recommended) - includes PowerShell tests
 ./tests/run_all_tests.sh
 
 # Individual test suites (Bash)
@@ -40,8 +40,9 @@ cargo build --release
 ./tests/simple_test.sh               # Simple functionality test
 ./tests/quick_regression_test.sh     # Quick regression check
 
-# PowerShell test suite
-pwsh -NoProfile tests/test_powershell_basic.ps1  # Basic PowerShell functionality
+# PowerShell test suites (cross-platform bash scripts)
+./tests/validate_powershell_linux.sh   # PowerShell on Linux/WSL
+./tests/validate_powershell_windows.sh # PowerShell on Windows
 
 # Manual testing after build (Bash)
 export JCD_BINARY="$(pwd)/target/release/jcd"
@@ -149,30 +150,36 @@ source /usr/bin/jcd_function.sh  # Or /opt/homebrew/bin/jcd_function.sh on Mac
 
 ## PowerShell Support
 
-PowerShell support is being added in two phases. See `TODO.md` for the complete implementation plan.
+PowerShell support is fully implemented for both Linux and Windows. See `TODO.md` for future enhancements.
 
 **Development Approach:**
-- **Phase A: PowerShell on Linux** ✅ COMPLETE - Build and test PowerShell module using existing Rust binary on Linux
-- **Phase B: PowerShell on Windows** (Future) - Add Windows-specific path support to Rust binary, then test on Windows
+- **Phase A: PowerShell on Linux** ✅ COMPLETE - Built and tested PowerShell module using existing Rust binary on Linux
+- **Phase B: PowerShell on Windows** ✅ COMPLETE - Added Windows-specific path support to Rust binary and tested on Windows
 
-**Phase A Status (PowerShell on Linux) - ✅ COMPLETE:**
-- ✅ Rust binary works correctly on Linux (no changes needed)
+**Implementation Status - ✅ COMPLETE:**
+- ✅ Rust binary works correctly on both Linux and Windows
 - ✅ PowerShell module (`jcd_function.ps1`) with full functionality
 - ✅ Build system automatically copies `.ps1` file during build
-- ✅ All basic tests pass (7/7 tests in `tests/test_powershell_basic.ps1`)
+- ✅ Windows-specific ignore file paths implemented (`%USERPROFILE%\.config\jcd\ignore`)
+- ✅ Cross-platform binary location detection (Linux, Windows, Homebrew paths)
+- ✅ All tests pass on Windows (11/11 tests in `tests/validate_powershell_windows.sh`)
 - ✅ Tab completion implemented with `Register-ArgumentCompleter -Native`
 - ✅ MenuComplete compatible (shows all matches, PSReadLine handles Tab/Shift+Tab)
 - ✅ Case-insensitive search with `-i` flag
-- ✅ Ignore patterns work (inherited from Rust binary)
+- ✅ Ignore patterns work on both platforms
 
-**Installation (Build from Source - Linux/WSL):**
+**Installation (Build from Source):**
 ```bash
 # Build
 cargo build --release
 
-# Add to PowerShell profile ($PROFILE)
+# Linux/WSL: Add to PowerShell profile ($PROFILE)
 $env:JCD_BINARY = "/path/to/Sysinternals-jcd/target/release/jcd"
 . /path/to/Sysinternals-jcd/target/release/jcd_function.ps1
+
+# Windows: Add to PowerShell profile ($PROFILE)
+$env:JCD_BINARY = "C:\path\to\Sysinternals-jcd\target\release\jcd.exe"
+. C:\path\to\Sysinternals-jcd\target\release\jcd_function.ps1
 ```
 
 **Usage:**
@@ -181,21 +188,27 @@ jcd src              # Navigate to directory matching 'src'
 jcd -i DOC           # Case-insensitive search
 jcd dd<TAB>          # Tab completion shows all matches
 jcd ..               # Navigate to parent
+jcd -x node_modules  # Bypass ignore patterns
 ```
 
-**Phase B Status (PowerShell on Windows) - Future:**
-- ❌ Rust binary does not yet support Windows-specific ignore file paths
-- ❌ PowerShell module not yet tested on Windows
-- ❌ Windows path separators (`\`) not yet validated
+**Testing:**
+```bash
+# Run PowerShell tests (automatically detects platform)
+./tests/run_all_tests.sh
+
+# Or run platform-specific tests directly
+./tests/validate_powershell_linux.sh    # Linux/WSL
+./tests/validate_powershell_windows.sh  # Windows (via Git Bash)
+```
 
 **Key Design Decisions:**
-- Develop PowerShell module on Linux first to simplify testing and iteration
-- Use existing Rust binary on Linux (already works with standard Unix paths)
+- Developed PowerShell module on Linux first to simplify testing and iteration
+- Cross-platform binary detection supports multiple installation locations
 - Tab completion handled by PSReadLine (Tab/Shift+Tab cycling automatic)
-- Use `--quiet` flag to suppress progress animation in PowerShell
-- Future: `%USERPROFILE%\.config\jcd\ignore` on Windows (keeping `~/.config` pattern)
-- Future: Accept both `/` and `\` as path separators on Windows
-- Build-from-source installation for now; packaged installation (Scoop, etc.) will come later
+- Uses `--quiet` flag to suppress progress animation in PowerShell
+- Windows ignore files use `%USERPROFILE%\.config\jcd\ignore` (keeping `~/.config` pattern)
+- PathBuf automatically handles both `/` and `\` as path separators on Windows
+- Build-from-source installation for now; packaged installation (Scoop, etc.) planned for future
 
 ## Important Notes
 
